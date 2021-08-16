@@ -88,7 +88,21 @@ the guest user's ID is always 0. Include in your output the name of the
 facility, the name of the member formatted as a single column, and the cost.
 Order by descending cost, and do not use any subqueries. */
 
-Select name, wholename, cost From
+/* This is from Reza */
+SELECT f.name AS fac, CONCAT(m.firstname,' ',m.surname) AS member,
+	CASE WHEN b.memid = 0 THEN f.guestcost * b.slots
+	ELSE f.membercost * b.slots END AS cost
+FROM Bookings AS b
+	LEFT JOIN Facilities AS f
+		ON b.facid = f.facid
+	LEFT JOIN Members AS m
+		ON b.memid = m.memid
+WHERE b.starttime LIKE '2012-09-14%'
+HAVING cost > 30
+ORDER BY cost DESC;
+
+
+/* Select name, wholename, cost From
 (Select F.name,CONCAT(firstname, ' ', surname) AS wholename, 
        Case When B.memid = 0 Then (B.slots*F.guestcost)
        Else (B.slots*F.membercost) END AS cost
@@ -99,7 +113,7 @@ Inner Join Members as M
 ON B.memid = M.memid
 Where B.starttime LIKE '2012-09-14%') As X
 Where cost >30.0
-Order by Cost DESC;
+Order by Cost DESC; */
 
 
 /* Q9: This time, produce the same result as in Q8, but using a subquery. */
